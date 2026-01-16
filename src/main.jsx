@@ -8,10 +8,11 @@ import App from './App.jsx';
 import Home from './pages/Home.jsx';
 import Products from './pages/Products.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
-import CalendarView from './pages/CalendarView.jsx';
+import MyRentals from './pages/MyRentals.jsx';
 import About from './pages/About.jsx';
 import NotFound from './pages/NotFound.jsx';
 import './index.css';
+import Login from './pages/Login.jsx';
 
 const router = createBrowserRouter([
   {
@@ -31,12 +32,16 @@ const router = createBrowserRouter([
         element: <ProductDetails />,
       },
       {
-        path: "calendar",
-        element: <CalendarView />,
+        path: "myrentals",
+        element: <MyRentals />,
       },
       {
         path: "about",
         element: <About />,
+      },
+      {
+        path: "login",
+        element: <Login />,
       },
       {
         path: "*",
