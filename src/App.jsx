@@ -1,11 +1,31 @@
-// src/App.jsx
-import { Routes, Route, NavLink } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 
 // Layout component with sidebar
 function AppLayout({ children }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+  const token = localStorage.getItem('accessToken');
+  const refresh = localStorage.getItem('refreshToken');
+  
+  // NUR wenn beide weg sind, schicken wir den User zum Login
+  if (!token && !refresh) {
+    navigate("/login");
+  }
+}, [navigate]);
+
+  const handleLogout = () => {
+    // 1. Tokens entfernen
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    
+    // 2. Zur Login-Seite umleiten
+    navigate("/login");
+  };
   return (
     <div style={{ display: "flex" }}>
       <nav
@@ -23,6 +43,22 @@ function AppLayout({ children }) {
         <NavLink to="/products">Kameras</NavLink>
         <NavLink to="/MyRentals">Meine Produkte</NavLink>
         <NavLink to="/about">Über uns</NavLink>
+
+        <hr style={{ width: "100%", border: "0.5px solid #ccc", marginTop: "20px" }} />
+        <button 
+          onClick={handleLogout}
+          style={{
+            padding: "10px",
+            background: "#dc3545",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            fontWeight: "bold"
+          }}
+        >
+          Abmelden
+        </button>
       </nav>
 
       <div style={{ flex: 1, padding: "20px" }}>

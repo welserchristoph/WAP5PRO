@@ -20,12 +20,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false })); 
 app.use(express.static('dist'));
 app.use(cors({
-  origin: 'http://localhost:3000' // Nur Anfragen von localhost:3000 
+  origin: 'http://localhost:5173', // Erlaubt Jonas' React-App den Zugriff
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'] // Wichtig für deine Bearer-Tokens!
 }));
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 Minuten Sperrzeit
-  max: 10, // Nur 20 Fehlversuche
+  max: 20, // Nur 20 Fehlversuche
   message: "Zu viele Login-Versuche, bitte warte 15 Minuten."
 });
 
@@ -47,7 +49,7 @@ try {
     // OAuth Server 
     const oauth = new OAuthServer({ 
     model: oAuthModel(db),
-    accessTokenLifetime: 60*60,           // 1h 
+    accessTokenLifetime: 60 * 60,           // 1h 
     refreshTokenLifetime: 60 * 60 * 24, // 24 Stunden für das Refresh-Token
     alwaysIssueNewRefreshToken: true   // Bei jedem Refresh ein neues Token ausstellen
     });

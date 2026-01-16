@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { mockCameras } from "../data/MockCameras";
 import { Link } from "react-router-dom";
+import { apiRequest } from "../services/apiService";
 
 const RentalCard = ({ camera }) => {
   return (
@@ -8,8 +8,8 @@ const RentalCard = ({ camera }) => {
       <img src={camera.image} alt={camera.name} className="product-image"/>
       <h3>{camera.name}</h3>
       <p>{camera.description}</p>
-      <p><strong>{camera.pricePerDay}€ / day</strong></p>
-      <p>{camera.location}</p>
+      <p><strong>{camera.daily_rate}€ / day</strong></p>
+      <p>{camera.status}</p>
       
       <Link to={`/products/${camera.id}`}>
         <button>View Details</button>
@@ -22,8 +22,10 @@ const HomeCamerasPreview = () => {
   const [cameras, setCameras] = useState([]);
 
   useEffect(() => {
-    // Simulate API call
-    setCameras(mockCameras);
+   apiRequest("/cameras")
+      .then(res => res.json())
+      .then(data => setCameras(data))
+      .catch(err => console.error(err));
   }, []);
 
   // Show only first 3 cameras as preview
@@ -35,7 +37,7 @@ const HomeCamerasPreview = () => {
 
       <div className="products-grid">
         {previewCameras.map((camera) => (
-          <RentalCard key={camera.id} camera={camera} />
+          <RentalCard key={camera._id} camera={camera} />
         ))}
       </div>
 

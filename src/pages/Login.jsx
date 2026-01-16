@@ -3,32 +3,55 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(""); // Das ist deine Email
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(""); // Fehler zurücksetzen
 
-    // Replace with real API later
-    if (username === "user" && password === "123") {
-      navigate("/");
-    } else {
-      setError("Invalid username or password");
+    // Daten für OAuth (x-www-form-urlencoded) vorbereiten
+    const details = {
+      'grant_type': 'password',
+      'username': username,
+      'password': password,
+      'client_id': 'client'
+    };
+
+    const formBody = Object.keys(details)
+      .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(details[key]))
+      .join('&');
+
+    try {
+      // WICHTIG: Volle URL zum Backend nutzen
+      const response = await fetch('http://localhost:3000/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formBody
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // --- TOKEN SPEICHERN ---
+        localStorage.setItem('accessToken', data.access_token);
+        localStorage.setItem('refreshToken', data.refresh_token);
+        
+        console.log("Login erfolgreich!");
+        // Weiterleitung zur Home-Seite (Jonas' Route)
+        navigate("/");
+      } else {
+        setError("Ungültige E-Mail oder Passwort");
+      }
+    } catch (err) {
+      console.error("Login-Fehler:", err);
+      setError("Server nicht erreichbar. Hast du das Backend gestartet?");
     }
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "50px auto",
-        padding: "20px",
-        border: "1px solid #ccc",
-        borderRadius: "10px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-      }}
-    >
+    <div style={{ maxWidth: "400px", margin: "50px auto", padding: "20px", border: "1px solid #ccc", borderRadius: "10px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
       <h2 style={{ textAlign: "center" }}>Login</h2>
       {error && (
         <p style={{ color: "red", textAlign: "center", marginBottom: "10px" }}>
@@ -36,16 +59,16 @@ const Login = () => {
         </p>
       )}
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        <label>Username:</label>
+        <label>E-Mail:</label>
         <input
-          type="text"
+          type="email"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
           style={{ padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
         />
 
-        <label>Password:</label>
+        <label>Passwort:</label>
         <input
           type="password"
           value={password}
@@ -56,15 +79,7 @@ const Login = () => {
 
         <button
           type="submit"
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "none",
-            background: "#007bff",
-            color: "white",
-            cursor: "pointer",
-            marginTop: "10px",
-          }}
+          style={{ padding: "10px", borderRadius: "5px", border: "none", background: "#007bff", color: "white", cursor: "pointer", marginTop: "10px" }}
         >
           Login
         </button>
