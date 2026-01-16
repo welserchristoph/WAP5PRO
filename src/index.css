@@ -24,8 +24,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -65,4 +63,27 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;                    
+}
+
+.card {
+  border: 1px solid #ccc;       /* border around the card */
+  border-radius: 10px;           /* rounded corners */
+  padding: 15px;                 /* space inside the card *                 /* space between cards */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* subtle shadow */
+  transition: transform 0.2s;    /* smooth hover effect */
+}
+
+.card:hover {
+  transform: scale(1.03);        /* slightly grow on hover */
+}
+
+.card img.product-image {
+  width: 100%;
+  border-radius: 8px;
 }
