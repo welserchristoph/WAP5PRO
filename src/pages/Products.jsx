@@ -22,7 +22,6 @@ const Cameras = () => {
   const [cameras, setCameras] = useState([]);
 
   useEffect(() => {
-    // Simulate API call
     setCameras(mockCameras);
   }, []);
 
