@@ -73,24 +73,45 @@ router.post('/bookings', async (req, res) => {
   try {
     const db = req.app.get('db');
     const { cameraId, startDate, endDate, totalPrice, cameraName } = req.body;
+    const oauthUser = res.locals.oauth.token.user;
 
-    if (!req.user) return res.status(401).send("Bitte einloggen");
+    if (!oauthUser) return res.status(401).json({ error: "Nicht autorisiert" });
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const existingBooking = await db.collection('bookings').findOne({
+      cameraId: new ObjectId(cameraId),
+      status: "confirmed", 
+      $and: [
+        { startDate: { $lt: end } },
+        { endDate: { $gt: start } } 
+      ]
+    });
+
+    if (existingBooking) {
+      return res.status(409).json({ 
+        error: "Die Kamera ist in diesem Zeitraum bereits gebucht." 
+      });
+    }
 
     const newBooking = {
-      userId: new ObjectId(req.user._id),
+      userId: new ObjectId(oauthUser._id),
       cameraId: new ObjectId(cameraId),
-      cameraName: cameraName,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      totalPrice: totalPrice,
+      cameraName,
+      startDate: start,
+      endDate: end,
+      totalPrice,
       status: "confirmed",
       bookedAt: new Date()
     };
 
     const result = await db.collection('bookings').insertOne(newBooking);
-    res.status(201).json(result);
+    res.status(201).json({ message: "Erfolgreich gebucht!", bookingId: result.insertedId });
+
   } catch (err) {
-    res.status(400).json({ error: "Buchung fehlgeschlagen" });
+    console.error(err);
+    res.status(500).json({ error: "Serverfehler bei der Buchung" });
   }
 });
 
