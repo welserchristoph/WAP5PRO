@@ -3,6 +3,7 @@ import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
+import ProductDetails from "./pages/ProductDetails";
 
 // Layout component with sidebar
 function AppLayout({ children }) {
@@ -88,6 +89,15 @@ function App() {
         element={
           <AppLayout>
             <Products />
+          </AppLayout>
+        }
+      />
+
+      <Route
+        path="/products/:id"
+        element={
+          <AppLayout>
+            <ProductDetails />
           </AppLayout>
         }
       />

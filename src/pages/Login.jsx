@@ -3,15 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState(""); // Das ist deine Email
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Fehler zurücksetzen
+    setError("");
 
-    // Daten für OAuth (x-www-form-urlencoded) vorbereiten
     const details = {
       'grant_type': 'password',
       'username': username,
@@ -24,7 +23,6 @@ const Login = () => {
       .join('&');
 
     try {
-      // WICHTIG: Volle URL zum Backend nutzen
       const response = await fetch('http://localhost:3000/api/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -34,12 +32,12 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         
-        // --- TOKEN SPEICHERN ---
+        
         localStorage.setItem('accessToken', data.access_token);
         localStorage.setItem('refreshToken', data.refresh_token);
         
         console.log("Login erfolgreich!");
-        // Weiterleitung zur Home-Seite (Jonas' Route)
+        
         navigate("/");
       } else {
         setError("Ungültige E-Mail oder Passwort");
