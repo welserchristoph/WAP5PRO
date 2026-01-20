@@ -22,25 +22,26 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+ const [errorMsg, setErrorMsg] = useState("");
+
   const handleRegisterEmail = async () => {
+    setErrorMsg(""); 
     try {
       const res = await fetch('http://localhost:3000/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email })
       });
+
       if (res.ok) {
-        alert("Check dein Server-Terminal für den Aktivierungs-Code!");
         setActiveStep(1); 
       } else {
-            const errorData = await res.json().catch(() => null);
-            const errorMessage = errorData?.error || await res.text() || "Ein unbekannter Fehler ist aufgetreten.";
-            
-            alert("Fehler: " + errorMessage);
+        const errorData = await res.json().catch(() => null);
+        const message = errorData?.error || "Fehler beim Senden des Codes.";
+        setErrorMsg(message);
       }
     } catch (err) {
-      console.error(err);
-      alert("Netzwerkfehler: Server nicht erreichbar.");
+      setErrorMsg("Server nicht erreichbar.");
     }
   };
 
@@ -83,8 +84,10 @@ const Register = () => {
               label="E-Mail Adresse" 
               name="email"
               value={formData.email}
-              onChange={handleChange}
+              onChange={(e) => { setErrorMsg(""); handleChange(e); }} 
               fullWidth
+              error={!!errorMsg}        
+              helperText={errorMsg}     
             />
             <Button variant="contained" onClick={handleRegisterEmail}>Code anfordern</Button>
           </Box>

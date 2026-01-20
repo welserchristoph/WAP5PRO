@@ -9,7 +9,9 @@ router.post('/', async (req, res) => {
     const db = req.app.get('db');
     const { email } = req.body;
 
-    if (!email || !email.includes('@')) return res.status(400).send("E-Mail fehlt.");
+if (!email || !email.includes('@')) {
+  return res.status(400).json({ error: "Bitte gib eine gültige E-Mfail-Adresse ein." });
+}
 
     const existingUser = await db.collection('user_auth').findOne({ username: email });
 
