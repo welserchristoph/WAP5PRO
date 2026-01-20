@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 // MUI Imports
 import {
@@ -11,7 +12,8 @@ import {
   Alert,
   CircularProgress,
   InputAdornment,
-  Container
+  Container,
+  Link
 } from "@mui/material";
 
 // Icons für den modernen Look
@@ -213,6 +215,15 @@ const Login = () => {
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : "Anmelden"}
             </Button>
+
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Typography variant="body2">
+                Noch kein Konto?{" "}
+                <Link component={RouterLink} to="/register" sx={{ fontWeight: 'bold', textDecoration: 'none' }}>
+                  Jetzt hier registrieren
+                </Link>
+              </Typography>
+            </Box>
 
           </Box>
         </Paper>

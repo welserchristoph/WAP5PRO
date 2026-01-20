@@ -11,6 +11,12 @@ router.post('/', async (req, res) => {
 
     if (!email || !email.includes('@')) return res.status(400).send("E-Mail fehlt.");
 
+    const existingUser = await db.collection('user_auth').findOne({ username: email });
+
+    if (existingUser) {
+      return res.status(409).json({ error: "Diese E-Mail ist bereits registriert." });
+    }
+
     const insertion = await db.collection('user_auth').insertOne({ username: email });
 
     if (insertion.acknowledged) {

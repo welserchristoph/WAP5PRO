@@ -26,8 +26,8 @@ app.use(cors({
 }));
 
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 Minuten Sperrzeit
-  max: 20, // Nur 20 Fehlversuche
+  windowMs: 15 * 60 * 1000,
+  max: 100, 
   message: "Zu viele Login-Versuche, bitte warte 15 Minuten."
 });
 
@@ -67,13 +67,9 @@ try {
 
     app.use('/api', oauth.authenticate(), api);
 
-    app.get('/test-login', (req, res) => {
-        res.sendFile(path.join(__dirname, 'dist', 'test-login.html'));
-    });
+    
+    app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
-    app.use(function(req, res) {
-        res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-    });
 
     app.listen(port, () => {
         console.log(`Server läuft auf http://localhost:${port}`);

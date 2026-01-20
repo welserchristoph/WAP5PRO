@@ -12,7 +12,7 @@ import {
   ListItemText, 
   Button, 
   Divider,
-  Toolbar
+  Toolbar,
 } from '@mui/material';
 
 // Icons
@@ -28,6 +28,7 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
 import MyRentals from "./pages/MyRentals";
+import Register from "./pages/Register";
 
 const DRAWER_WIDTH = 250;
 
@@ -46,11 +47,13 @@ function AppLayout() {
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     const refresh = localStorage.getItem('refreshToken');
+
+    const publicPages = ["/login", "/register"];
     
-    if (!token && !refresh) {
+    if (!token && !refresh && !publicPages.includes(location.pathname)) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -160,7 +163,7 @@ function App() {
     <Routes>
       {/* Login Seite (Ohne Layout) */}
       <Route path="/login" element={<Login />} />
-
+      <Route path="/register" element={<Register />} />
       {/* Geschützte Seiten (Mit Layout) */}
       {/* Wir wickeln das Layout UM die Routen, statt in jede Route einzeln */}
       <Route element={<AppLayout />}>
@@ -171,7 +174,7 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetails />} />
         
-        {/* Pfad kleingeschrieben für Konsistenz */}
+        
         <Route path="/myrentals" element={<MyRentals />} /> 
 
         <Route path="/about" element={<h2>Über uns (Platzhalter)</h2>} />
