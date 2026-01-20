@@ -49,15 +49,22 @@ router.get('/bookings/camera/:cameraId', async (req, res) => {
 router.get('/my-bookings', async (req, res) => {
   try {
     const db = req.app.get('db');
-  
-    if (!req.user) return res.status(401).send("Nicht autorisiert");
+    
+    // Bei express-oauth-server liegt der User hier:
+    const oauthUser = res.locals.oauth.token.user;
 
+    if (!oauthUser) {
+      return res.status(401).json({ error: "Nicht autorisiert" });
+    }
+
+    // Jetzt suchen wir mit der ID des OAuth-Users
     const myBookings = await db.collection('bookings')
-      .find({ userId: new ObjectId(req.user._id) })
+      .find({ userId: new ObjectId(oauthUser._id) })
       .toArray();
       
     res.json(myBookings);
   } catch (err) {
+    console.error("Fehler bei my-bookings:", err);
     res.status(500).json({ error: "Fehler beim Laden deiner Buchungen" });
   }
 });
