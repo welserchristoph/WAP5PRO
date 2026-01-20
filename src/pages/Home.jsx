@@ -1,24 +1,19 @@
+// src/pages/Home.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { apiRequest } from "../services/apiService";
+import CameraCard from "../components/CameraCard";
 
-const RentalCard = ({ camera }) => {
-  return (
-    <div className="card">
-      <img src={camera.image} alt={camera.name} className="product-image"/>
-      <h3>{camera.name}</h3>
-      <p>{camera.description}</p>
-      <p><strong>{camera.daily_rate}€ / day</strong></p>
-      <p>{camera.status}</p>
-      
-      <Link to={`/products/${camera.id}`}>
-        <button>View Details</button>
-      </Link>
-    </div>
-  );
-};
+import { 
+  Box, 
+  Container, 
+  Typography, 
+  Button, 
+  Stack 
+} from '@mui/material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-const HomeCamerasPreview = () => {
+const Home = () => {
   const [cameras, setCameras] = useState([]);
 
   useEffect(() => {
@@ -28,27 +23,64 @@ const HomeCamerasPreview = () => {
       .catch(err => console.error(err));
   }, []);
 
-  // Show only first 3 cameras as preview
   const previewCameras = cameras.slice(0, 3);
 
   return (
-    <div>
-      <h1>Cameras for Rent</h1>
+    <Box>
+      <Box sx={{ 
+        textAlign: 'center', 
+        py: 8, 
+        backgroundColor: 'background.paper',
+        mb: 6 
+      }}>
+        <Container maxWidth="md">
+          <Typography variant="h2" component="h1" gutterBottom fontWeight="bold">
+            Professionelles Equipment leihen.
+          </Typography>
+          <Typography variant="h5" color="text.secondary" paragraph>
+            Finde die perfekte Kamera für dein nächstes Projekt. Einfach, schnell und versichert.
+          </Typography>
+          <Button 
+            variant="contained" 
+            size="large" 
+            component={Link} 
+            to="/products"
+            sx={{ mt: 2 }}
+          >
+            Jetzt stöbern
+          </Button>
+        </Container>
+      </Box>
 
-      <div className="products-grid">
-        {previewCameras.map((camera) => (
-          <RentalCard key={camera._id} camera={camera} />
-        ))}
-      </div>
+      <Container maxWidth="lg" sx={{ mb: 8 }}>
+        <Typography variant="h4" component="h2" sx={{ mb: 4, fontWeight: 'bold' }}>
+          Neueste Zugänge
+        </Typography>
 
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <Link to="/products">
-          <button className="alle-anzeigen-btn">Alle Anzeigen</button>
-        </Link>
-      </div>
-    </div>
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+          gap: 3 
+        }}>
+          {previewCameras.map((camera) => (
+            <CameraCard key={camera._id} camera={camera} />
+          ))}
+        </Box>
+
+        <Box sx={{ textAlign: "center", mt: 6 }}>
+          <Button 
+            component={Link} 
+            to="/products" 
+            variant="outlined" 
+            size="large"
+            endIcon={<ArrowForwardIcon />} 
+          >
+            Alle Kameras anzeigen
+          </Button>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 
-export default HomeCamerasPreview;
-
+export default Home;
