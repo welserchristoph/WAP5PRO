@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { apiRequest } from "../services/apiService";
 
-// MUI Imports
 import { 
   Container, 
   Typography, 
@@ -18,13 +17,11 @@ import {
   Divider
 } from '@mui/material';
 
-// Icons
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import HistoryIcon from '@mui/icons-material/History';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-// Hilfsfunktion: Datum schön formatieren (z.B. "15.02.2026")
 const formatDate = (dateString) => {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString('de-DE', {
@@ -32,14 +29,12 @@ const formatDate = (dateString) => {
   });
 };
 
-// --- Sub-Komponente für eine einzelne Buchung ---
 const BookingCard = ({ booking, isPast }) => {
   return (
     <Card sx={{ mb: 2, borderLeft: isPast ? '4px solid #777' : '4px solid #646cff' }}>
       <CardContent>
         <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ sm: 'center' }} spacing={2}>
           
-          {/* Linker Teil: Infos */}
           <Box>
             <Typography variant="h6" fontWeight="bold">
               {booking.cameraName || "Unbekanntes Produkt"}
@@ -57,7 +52,6 @@ const BookingCard = ({ booking, isPast }) => {
             </Typography>
           </Box>
 
-          {/* Rechter Teil: Status & Button */}
           <Stack alignItems={{ sm: 'flex-end' }} spacing={1}>
             <Chip 
               label={isPast ? "Abgeschlossen" : booking.status} 
@@ -66,7 +60,6 @@ const BookingCard = ({ booking, isPast }) => {
               icon={isPast ? <HistoryIcon /> : <CheckCircleIcon />}
             />
             
-            {/* Link zur Produktseite (nutzt cameraId aus deiner DB) */}
             <Button 
               component={Link} 
               to={`/products/${booking.cameraId}`} 
@@ -83,21 +76,18 @@ const BookingCard = ({ booking, isPast }) => {
   );
 };
 
-// --- Haupt-Komponente ---
 export default function MyRentals() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tabIndex, setTabIndex] = useState(0); // 0 = Aktuell, 1 = Verlauf
+  const [tabIndex, setTabIndex] = useState(0);
 
   useEffect(() => {
-    // API Request an deinen neuen Endpunkt
-    apiRequest("/my-bookings") // Stelle sicher, dass "apiService" das Token mitschickt!
+    apiRequest("/my-bookings")
       .then(res => {
         if (!res.ok) throw new Error("Fehler beim Laden");
         return res.json();
       })
       .then(data => {
-        // Sortieren: Neueste Buchung zuerst (nach bookedAt)
         const sorted = data.sort((a, b) => new Date(b.bookedAt) - new Date(a.bookedAt));
         console.log("Geladene Buchungen:", sorted);
         setBookings(sorted);
@@ -109,7 +99,6 @@ export default function MyRentals() {
       });
   }, []);
 
-  // Filter-Logik
   const now = new Date();
   
   const activeBookings = bookings.filter(b => new Date(b.endDate) >= now);
@@ -133,7 +122,6 @@ export default function MyRentals() {
         Meine Ausleihen
       </Typography>
 
-      {/* TABS */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
         <Tabs value={tabIndex} onChange={handleTabChange} aria-label="rentals tabs">
           <Tab label={`Aktuell (${activeBookings.length})`} />
@@ -141,7 +129,6 @@ export default function MyRentals() {
         </Tabs>
       </Box>
 
-      {/* INHALT: AKTUELL */}
       <div role="tabpanel" hidden={tabIndex !== 0}>
         {tabIndex === 0 && (
           activeBookings.length > 0 ? (
@@ -159,7 +146,6 @@ export default function MyRentals() {
         )}
       </div>
 
-      {/* INHALT: HISTORIE */}
       <div role="tabpanel" hidden={tabIndex !== 1}>
         {tabIndex === 1 && (
           pastBookings.length > 0 ? (
