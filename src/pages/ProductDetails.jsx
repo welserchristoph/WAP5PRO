@@ -51,7 +51,7 @@ export default function ProductDetails() {
       
       const ranges = bookingsData.map(booking => ({
         start: dayjs(booking.startDate),
-        end: dayjs(booking.endDate)
+        end: dayjs(booking.endDate).subtract(1, 'day')
       }));
       setBookedRanges(ranges);
       
@@ -89,7 +89,7 @@ export default function ProductDetails() {
       const payload = {
         cameraId: camera._id,
         startDate: start.toISOString(),
-        endDate: end.toISOString(),
+        endDate: end.add(1, 'day').startOf('day').toISOString(),
         totalPrice: totalPrice,
         cameraName: `${camera.brand} ${camera.name}`
       };
@@ -183,7 +183,7 @@ export default function ProductDetails() {
                   <DateRangeCalendar 
                     value={dateRange}
                     onChange={(newValue) => setDateRange(newValue)}
-                    shouldDisableDate={shouldDisableDate} // Hier passiert die Blockierung
+                    shouldDisableDate={shouldDisableDate}
                     disablePast
                     calendars={1}
                   />
@@ -218,7 +218,7 @@ export default function ProductDetails() {
             </Grid>
           </Grid>
         </Paper>
-        
+
         <Snackbar 
             open={feedback.open} 
             autoHideDuration={4000} 

@@ -22,6 +22,8 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import HistoryIcon from '@mui/icons-material/History';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
+import dayjs from 'dayjs';
+
 const formatDate = (dateString) => {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString('de-DE', {
@@ -43,7 +45,7 @@ const BookingCard = ({ booking, isPast }) => {
             <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 1, color: 'text.secondary' }}>
               <CalendarMonthIcon fontSize="small" />
               <Typography variant="body2">
-                {formatDate(booking.startDate)} — {formatDate(booking.endDate)}
+                {formatDate(booking.startDate)} — {formatDate(dayjs(booking.endDate).subtract(1, 'day'))}
               </Typography>
             </Stack>
 

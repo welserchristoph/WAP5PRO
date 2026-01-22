@@ -81,8 +81,7 @@ router.post('/bookings', async (req, res) => {
     const end = new Date(endDate);
 
     const existingBooking = await db.collection('bookings').findOne({
-      cameraId: new ObjectId(cameraId),
-      status: "confirmed", 
+      cameraId: new ObjectId(cameraId), 
       $and: [
         { startDate: { $lt: end } },
         { endDate: { $gt: start } } 
