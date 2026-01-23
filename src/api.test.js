@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { jest, expect, test, describe, beforeEach } from '@jest/globals';
+import { ObjectId } from 'mongodb';
 import app from '../app.js';
 import { 
     validateBookingDates, 
@@ -35,6 +36,13 @@ beforeAll(async () => {
 afterAll(async () => {
     const db = app.get('db');
     if (db && db.client) {
+        await db.collection('bookings').deleteMany({ userId: app.get('testUserId') }); 
+        
+        await db.collection('user_auth').deleteOne({ username: "testuser@example.com" });
+        await db.collection('user').deleteOne({ email: "testuser@example.com" });
+        await db.collection('cameras').deleteOne({ _id: new ObjectId("65ae1234567890abcdef1234") });
+        
+        console.log("Cleanup: Testdaten wurden aus der DB entfernt.")
         await db.client.close();
     }
 });

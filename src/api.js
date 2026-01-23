@@ -74,7 +74,7 @@ router.get('/my-bookings', async (req, res) => {
 router.post('/bookings', async (req, res) => {
   try {
     const db = req.app.get('db');
-    const { cameraId, startDate, endDate, totalPrice, cameraName } = req.body;
+    const { cameraId, startDate, endDate, cameraName } = req.body;
     const oauthUser = res.locals.oauth.token.user;
 
     if (!oauthUser) return res.status(401).json({ error: "Nicht autorisiert" });
