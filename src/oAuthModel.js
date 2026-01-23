@@ -1,18 +1,19 @@
 import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
 
-// Definition des Clients (deiner App)
 const client = {
   id: 'client',
   grants: ['password', 'refresh_token'],
 };
 
-export default function oAuthModel(db) {
+export default function oAuthModel(app) {
+  const getDb = () => {
+    const db = app.get('db');
+    if (!db) throw new Error("Database not initialized");
+    return db;
+  };
+
   return {
-    /**
-     * CLIENT
-     * schaut nach, ob der Client existiert
-     */
     getClient: async (clientId, clientSecret) => {
       if (!clientId || clientId === 'client') {
         return client;
@@ -20,27 +21,17 @@ export default function oAuthModel(db) {
       return false;
     },
 
-    /**
-     * LOGIN
-     * wenn Benutzername und Passwort gesendet werden
-     */
     getUser: async (username, password) => {
+      const db = getDb();
       const user = await db.collection('user_auth').findOne({ username });
-
       if (!user) return null;
 
-      // passwordcheck
       const passwordsMatch = await bcrypt.compare(password, user.password);
       return passwordsMatch ? user : null;
     },
 
-    /**
-     * TOKEN SPEICHERN
-     * Wird aufgerufen, wenn der Login erfolgreich war.
-     * Erstellt das Dokument in der 'token' Collection.
-     */
     saveToken: async (token, client, user) => {
-      // Verknüpfung zum profil (user_id)
+      const db = getDb();
       const profileId = user.user_id || user._id || user.id;
 
       await db.collection('token').insertOne({
@@ -54,12 +45,8 @@ export default function oAuthModel(db) {
       return { ...token, client, user };
     },
 
-    /**
-     * TOKEN VERIFIZIEREN 
-     * Wird bei jedem geschützten API-Aufruf aufgerufen.
-     * Prüft, ob das Token existiert und wer der Besitzer ist.
-     */
     getAccessToken: async (accessToken) => {
+      const db = getDb();
       const token = await db.collection('token').findOne({ accessToken });
       if (!token) return null;
 
@@ -69,37 +56,21 @@ export default function oAuthModel(db) {
       return token;
     },
 
-    /**
-     * REFRESH TOKEN LADEN
-     * Erlaubt es, ein neues Access Token zu erhalten, ohne sich neu einzuloggen.
-     */
     getRefreshToken: async (refreshToken) => {
-      // Suche das Token-Dokument
+      const db = getDb();
       const token = await db.collection('token').findOne({ refreshToken });
       
       if (token) {
-        token.client = client; // Das Objekt 'client' von ganz oben
-
+        token.client = client;
         const userId = typeof token.user_id === 'string' ? new ObjectId(token.user_id) : token.user_id;
-        
         token.user = await db.collection('user').findOne({ _id: userId });
-
-        // Kleiner Debug-Check für dich im Terminal:
-        if (!token.user) {
-          console.log("Refresh fehlgeschlagen: User wurde in der DB nicht gefunden!");
-        } else {
-          console.log("Refresh erfolgreich für User:", token.user || token.user_id.email);
-        }
       }
   
-  return token;
-},
+      return token;
+    },
 
-    /**
-     * LOGOUT
-     * Löscht das Refresh Token aus der Datenbank.
-     */
     revokeToken: async (token) => {
+      const db = getDb();
       const result = await db.collection('token').deleteOne({ 
         refreshToken: token.refreshToken 
       });

@@ -47,7 +47,7 @@ const startServer = async () => {
     }
 
     const oauth = new OAuthServer({ 
-      model: oAuthModel(db || app.get('db')),
+      model: oAuthModel(app),
       accessTokenLifetime: 60 * 60,
       refreshTokenLifetime: 60 * 60 * 24,
       alwaysIssueNewRefreshToken: true
