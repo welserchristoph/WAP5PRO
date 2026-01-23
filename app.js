@@ -36,31 +36,29 @@ const startServer = async () => {
       const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
       await client.connect();
       app.set('db', client.db('CameraRental'));
-      console.log("Erfolgreich mit MongoDB Atlas verbunden!");
     }
 
     const db = app.get('db');
-    
+
     if (db) {
       await db.collection('token').createIndex({ accessTokenExpiresAt: 1 }, { expireAfterSeconds: 0 });
       await db.collection('token').createIndex({ refreshTokenExpiresAt: 1 }, { expireAfterSeconds: 0 });
       await db.collection('token').createIndex({ emailTokenExpiresAt: 1 }, { expireAfterSeconds: 0 });
-
-      const oauth = new OAuthServer({ 
-        model: oAuthModel(db),
-        accessTokenLifetime: 60 * 60,
-        refreshTokenLifetime: 60 * 60 * 24,
-        alwaysIssueNewRefreshToken: true
-      });
-
-      app.use('/api/token', loginLimiter, oauth.token({ 
-        requireClientAuthentication: { password: false, refresh_token: false } 
-      }));
-
-      app.use('/api/register', register);
-      app.use('/api', oauth.authenticate(), api);
     }
 
+    const oauth = new OAuthServer({ 
+      model: oAuthModel(db || app.get('db')),
+      accessTokenLifetime: 60 * 60,
+      refreshTokenLifetime: 60 * 60 * 24,
+      alwaysIssueNewRefreshToken: true
+    });
+
+    app.use('/api/token', loginLimiter, oauth.token({ 
+      requireClientAuthentication: { password: false, refresh_token: false } 
+    }));
+
+    app.use('/api/register', register);
+    app.use('/api', oauth.authenticate(), api);
     app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
     if (process.env.NODE_ENV !== 'test') {
