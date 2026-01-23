@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { jest, expect, test, describe, beforeEach } from '@jest/globals';
-import { ObjectId } from 'mongodb';
+import { ObjectId, MongoClient } from 'mongodb';
 import app from '../app.js';
 import { 
     validateBookingDates, 
@@ -13,13 +13,12 @@ import setupTestUser from './setupTestUser.js';
 let accessToken;
 
 beforeAll(async () => {
-    const db = app.get('db');
-    if (!db) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-    const connectedDb = app.get('db');
-    await setupTestUser(connectedDb);
-
+    const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
+    await client.connect();
+    const db = client.db(); 
+    
+    app.set('db', db);
+    await setupTestUser(db);
     const res = await request(app)
         .post("/api/token")
         .type("form")

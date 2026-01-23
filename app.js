@@ -32,11 +32,14 @@ const loginLimiter = rateLimit({
 
 const startServer = async () => {
   try {
+    if (process.env.NODE_ENV !== 'test') {
+    
     const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
     await client.connect();
-    
-    const db = client.db('CameraRental'); 
-    app.set('db', db); 
+    app.set('db', client.db('CameraRental'));
+    }
+
+    const db = app.get('db');
 
     console.log("Erfolgreich mit MongoDB Atlas verbunden!");
 
