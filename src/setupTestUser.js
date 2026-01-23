@@ -30,7 +30,7 @@ export default async function setupTestUser(db) {
     if (!existingCamera) {
         await db.collection("cameras").insertOne({
             _id: testCameraId,
-            name: "Test Kamera Sony",
+            name: "Sony FX3",
             status: "available",
             daily_rate: 150
         });

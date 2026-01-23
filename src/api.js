@@ -80,7 +80,7 @@ router.post('/bookings', async (req, res) => {
     if (!oauthUser) return res.status(401).json({ error: "Nicht autorisiert" });
 
       let dates;
-      let calculatedPrice;
+      let totalPrice;
     try {
      
 
@@ -89,7 +89,7 @@ router.post('/bookings', async (req, res) => {
       const camera = await db.collection('cameras').findOne({ _id: new ObjectId(cameraId) });
       if (!camera) return res.status(404).json({ error: "Kamera nicht gefunden" });
 
-      calculatedPrice = calculateTotalPrice(camera.daily_rate, startDate, endDate);
+      totalPrice = calculateTotalPrice(camera.daily_rate, startDate, endDate);
     } catch (err) {
       return res.status(400).json({ error: err.message });
     }
@@ -116,7 +116,7 @@ router.post('/bookings', async (req, res) => {
       cameraName,
       startDate: start,
       endDate: end,
-      calculatedPrice,
+      totalPrice,
       status: "confirmed",
       bookedAt: new Date()
     };
