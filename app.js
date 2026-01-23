@@ -7,7 +7,6 @@ import OAuthServer from 'express-oauth-server';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 
-
 import api from './src/api.js'; 
 import register from './src/register.js';
 import oAuthModel from './src/oAuthModel.js';
@@ -20,9 +19,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false })); 
 app.use(express.static('dist'));
 app.use(cors({
-  origin: 'http://localhost:5173', // Erlaubt Jonas' React-App den Zugriff
+  origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'] // Wichtig für deine Bearer-Tokens!
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 const loginLimiter = rateLimit({
@@ -31,50 +30,47 @@ const loginLimiter = rateLimit({
   message: "Zu viele Login-Versuche, bitte warte 15 Minuten."
 });
 
-try {
+const startServer = async () => {
+  try {
     const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
     await client.connect();
     
-    // Datenbank-Verbindung
     const db = client.db('CameraRental'); 
     app.set('db', db); 
 
     console.log("Erfolgreich mit MongoDB Atlas verbunden!");
 
-    // TTL Indizes für automatische Token-Löschung
+    // TTL Indizes
     db.collection('token').createIndex({ accessTokenExpiresAt: 1 }, { expireAfterSeconds: 0 });
     db.collection('token').createIndex({ refreshTokenExpiresAt: 1 }, { expireAfterSeconds: 0 });
     db.collection('token').createIndex({ emailTokenExpiresAt: 1 }, { expireAfterSeconds: 0 });
 
-    // OAuth Server 
     const oauth = new OAuthServer({ 
-    model: oAuthModel(db),
-    accessTokenLifetime: 60 * 60,           // 1h 
-    refreshTokenLifetime: 60 * 60 * 24, // 24 Stunden für das Refresh-Token
-    alwaysIssueNewRefreshToken: true   // Bei jedem Refresh ein neues Token ausstellen
+      model: oAuthModel(db),
+      accessTokenLifetime: 60 * 60,
+      refreshTokenLifetime: 60 * 60 * 24,
+      alwaysIssueNewRefreshToken: true
     });
 
-
-    // Login-Endpunkt (hier wird das Access-Token generiert)
     app.use('/api/token', loginLimiter, oauth.token({ 
-    requireClientAuthentication: { 
-    password: false, // wir handeln dass über cors und login limiter(rate limit)
-    refresh_token: false 
-  } 
-}));
+      requireClientAuthentication: { password: false, refresh_token: false } 
+    }));
 
     app.use('/api/register', register);
-
     app.use('/api', oauth.authenticate(), api);
-
-    
     app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
-
-    app.listen(port, () => {
+    if (process.env.NODE_ENV !== 'test') {
+      app.listen(port, () => {
         console.log(`Server läuft auf http://localhost:${port}`);
-    });
+      });
+    }
 
-} catch (err) {
+  } catch (err) {
     console.error("Fehler beim Server-Start:", err);
-}
+  }
+};
+
+startServer();
+
+export default app;
