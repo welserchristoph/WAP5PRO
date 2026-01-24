@@ -1,13 +1,17 @@
 import express from 'express';
 import { ObjectId } from 'mongodb';
+import { validateBookingDates, filterAvailableCameras, calculateTotalPrice } from './logic.js';
 
 const router = express.Router(); 
 
 router.get('/cameras', async (req, res) => {
   try {
     const db = req.app.get('db'); 
-    const cameras = await db.collection('cameras').find({}).toArray(); 
-    res.json(cameras); 
+    const allCameras = await db.collection('cameras').find({}).toArray(); 
+
+    const availableCameras = filterAvailableCameras(allCameras);
+
+    res.json(availableCameras); 
   } catch (err) {
     res.status(500).send(); 
   }
@@ -50,14 +54,12 @@ router.get('/my-bookings', async (req, res) => {
   try {
     const db = req.app.get('db');
     
-    // Bei express-oauth-server liegt der User hier:
     const oauthUser = res.locals.oauth.token.user;
 
     if (!oauthUser) {
       return res.status(401).json({ error: "Nicht autorisiert" });
     }
 
-    // Jetzt suchen wir mit der ID des OAuth-Users
     const myBookings = await db.collection('bookings')
       .find({ userId: new ObjectId(oauthUser._id) })
       .toArray();
@@ -72,13 +74,27 @@ router.get('/my-bookings', async (req, res) => {
 router.post('/bookings', async (req, res) => {
   try {
     const db = req.app.get('db');
-    const { cameraId, startDate, endDate, totalPrice, cameraName } = req.body;
+    const { cameraId, startDate, endDate, cameraName } = req.body;
     const oauthUser = res.locals.oauth.token.user;
 
     if (!oauthUser) return res.status(401).json({ error: "Nicht autorisiert" });
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+      let dates;
+      let totalPrice;
+    try {
+     
+
+      dates = validateBookingDates(startDate, endDate);
+
+      const camera = await db.collection('cameras').findOne({ _id: new ObjectId(cameraId) });
+      if (!camera) return res.status(404).json({ error: "Kamera nicht gefunden" });
+
+      totalPrice = calculateTotalPrice(camera.daily_rate, startDate, endDate);
+    } catch (err) {
+      return res.status(400).json({ error: err.message });
+    }
+
+    const { start, end } = dates;
 
     const existingBooking = await db.collection('bookings').findOne({
       cameraId: new ObjectId(cameraId), 

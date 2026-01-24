@@ -1,6 +1,7 @@
 import express from 'express';
 import { v4 } from 'uuid';
 import bcrypt from 'bcrypt';
+import { isEmailValid } from './logic.js';
 
 const router = express.Router();
 
@@ -9,9 +10,9 @@ router.post('/', async (req, res) => {
     const db = req.app.get('db');
     const { email } = req.body;
 
-if (!email || !email.includes('@')) {
-  return res.status(400).json({ error: "Bitte gib eine gültige E-Mfail-Adresse ein." });
-}
+    if (!isEmailValid(email)) {
+      return res.status(400).json({ error: "Bitte gib eine gültige E-Mail-Adresse ein." });
+    }
 
     const existingUser = await db.collection('user_auth').findOne({ username: email });
 
@@ -30,11 +31,11 @@ if (!email || !email.includes('@')) {
       });
 
       console.log(`Activation link: http://localhost:3000/activate/${token}`);
-      res.status(201).send();
+      return res.status(201).json({ message: "Benutzer erfolgreich registriert" });
     } else {
       res.status(500).send();
     }
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     res.status(500).send();
   }
@@ -45,7 +46,9 @@ router.put('/:token', async (req, res) => {
     const db = req.app.get('db');
     const { first_name, last_name, password } = req.body;
 
-    if (!first_name || !last_name || !password) return res.status(400).send("Daten fehlen.");
+    if (!first_name || !last_name || !password) {
+      return res.status(400).json({ error: "Daten fehlen." });
+    }
 
     const token = await db.collection('token').findOne({ emailToken: req.params.token });
 
@@ -57,11 +60,10 @@ router.put('/:token', async (req, res) => {
       });
 
       if (insertion.acknowledged) {
-        // Passwort verschlüsseln
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const updated = await db.collection('user_auth').updateOne(
-          { _id: token.user_id }, 
+          { _id: token.user_id },
           { $set: { password: hashedPassword, user_id: insertion.insertedId } }
         );
 
@@ -77,7 +79,7 @@ router.put('/:token', async (req, res) => {
     } else {
       res.status(401).send();
     }
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     res.status(500).send();
   }
