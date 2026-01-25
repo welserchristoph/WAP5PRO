@@ -7,9 +7,9 @@ import OAuthServer from 'express-oauth-server';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 
-import api from './src/api.js'; 
-import register from './src/register.js';
-import oAuthModel from './src/oAuthModel.js';
+import api from './server/routes/api.js'; 
+import register from './server/routes/register.js';
+import oAuthModel from './server/models/oAuthModel.js';
 
 const app = express();
 const port = 3000;

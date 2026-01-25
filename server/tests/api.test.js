@@ -1,14 +1,14 @@
 import request from 'supertest';
 import { jest, expect, test, describe, beforeAll, afterAll } from '@jest/globals';
 import { ObjectId, MongoClient } from 'mongodb';
-import app from '../app.js';
+import app from '../../app.js';
 import {
     validateBookingDates,
     calculateTotalPrice,
     isEmailValid,
     filterAvailableCameras
-} from './logic.js';
-import setupTestUser from './setupTestUser.js';
+} from '../utils/logic.js';
+import setupTestUser from '../setupTestUser.js';
 
 let accessToken;
 let refreshToken;

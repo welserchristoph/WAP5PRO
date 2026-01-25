@@ -1,7 +1,7 @@
 import express from 'express';
 import { v4 } from 'uuid';
 import bcrypt from 'bcrypt';
-import { isEmailValid } from './logic.js';
+import { isEmailValid } from '../utils/logic.js';
 
 const router = express.Router();
 

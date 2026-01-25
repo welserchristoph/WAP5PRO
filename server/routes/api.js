@@ -1,6 +1,6 @@
 import express from 'express';
 import { ObjectId } from 'mongodb';
-import { validateBookingDates, filterAvailableCameras, calculateTotalPrice } from './logic.js';
+import { validateBookingDates, filterAvailableCameras, calculateTotalPrice } from '../utils/logic.js';
 
 const router = express.Router(); 
 
