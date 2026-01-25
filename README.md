@@ -6,4 +6,4 @@ START-Setup:
 
 3. Wichtig: "npm run seed", um die Kamera-Daten in Ihre Datenbank zu laden.
 
-4. Starten mit npm run dev und npx nodemon app.js
+4. Starten mit npm run dev
