@@ -62,11 +62,6 @@ const startServer = async () => {
     app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
     if (process.env.NODE_ENV !== 'test') {
-      app.get('*', (req, res) => {
-        const indexPath = path.join(__dirname, 'dist', 'index.html');
-        res.sendFile(indexPath);
-      });
-
       app.listen(port, () => {
         console.log(`Server läuft auf http://localhost:${port}`);
       });
@@ -79,8 +74,5 @@ const startServer = async () => {
 
 startServer();
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
 
 export default app;
