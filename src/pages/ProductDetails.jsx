@@ -162,14 +162,9 @@ export default function ProductDetails() {
               <Typography variant="h4" fontWeight="bold">
                 {camera.brand} {camera.name}
               </Typography>
-              
-              <Stack direction="row" spacing={1} sx={{ mt: 1, mb: 2 }}>
-                  <Chip label={camera.status} color={camera.status === 'Available' ? 'success' : 'warning'} />
-                  {camera.location && <Chip label={camera.location} variant="outlined" />}
-              </Stack>
 
               <Typography color="text.secondary" paragraph>
-                {camera.description || "Keine Beschreibung verfügbar."}
+                {camera.description}
               </Typography>
             </Grid>
 

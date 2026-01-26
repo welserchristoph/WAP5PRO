@@ -120,13 +120,13 @@ export default function MyRentals() {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 8 }}>
-      <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
+      <Typography variant="h4" component="h1" fontWeight="bold" textAlign="center" gutterBottom>
         Meine Ausleihen
       </Typography>
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={tabIndex} onChange={handleTabChange} aria-label="rentals tabs">
-          <Tab label={`Aktuell (${activeBookings.length})`} />
+        <Tabs value={tabIndex} onChange={handleTabChange} aria-label="rentals tabs" centered>
+          <Tab label={"Aktuell"} />
           <Tab label="Historie" />
         </Tabs>
       </Box>

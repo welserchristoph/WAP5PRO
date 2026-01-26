@@ -37,8 +37,8 @@ const Home = () => {
           <Typography variant="h2" component="h1" gutterBottom fontWeight="bold">
             Professionelles Equipment leihen.
           </Typography>
-          <Typography variant="h5" color="text.secondary" paragraph>
-            Finde die perfekte Kamera für dein nächstes Projekt. Einfach, schnell und versichert.
+          <Typography variant="h5" color="text.secondary" >
+            Finde die perfekte Kamera für dein nächstes Projekt.
           </Typography>
           <Button 
             variant="contained" 
@@ -47,7 +47,7 @@ const Home = () => {
             to="/products"
             sx={{ mt: 2 }}
           >
-            Jetzt stöbern
+            Kamera leihen
           </Button>
         </Container>
       </Box>

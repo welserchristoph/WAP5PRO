@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { Routes, Route, NavLink, useNavigate, Outlet } from "react-router-dom"; // Outlet importieren!
+import { Routes, Route, NavLink, useNavigate, Outlet } from "react-router-dom";
 
-// MUI Imports
 import { 
   Box, 
   Drawer, 
@@ -15,32 +14,29 @@ import {
   Toolbar,
 } from '@mui/material';
 
-// Icons
 import HomeIcon from '@mui/icons-material/Home';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import InfoIcon from '@mui/icons-material/Info';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-// Pages
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
 import MyRentals from "./pages/MyRentals";
 import Register from "./pages/Register";
+import About from "./pages/About";
 
 const DRAWER_WIDTH = 250;
 
-// Konfiguration der Menü-Punkte
 const menuItems = [
   { text: 'Home', icon: <HomeIcon />, path: '/' },
   { text: 'Kameras', icon: <CameraAltIcon />, path: '/products' },
-  { text: 'Meine Produkte', icon: <ShoppingBagIcon />, path: '/myrentals' }, // Pfad kleingeschrieben (Best Practice)
+  { text: 'Meine Produkte', icon: <ShoppingBagIcon />, path: '/myrentals' },
   { text: 'Über uns', icon: <InfoIcon />, path: '/about' },
 ];
 
-// Layout Component (Nutzt jetzt Outlet statt children für saubereres Routing)
 function AppLayout() {
   const navigate = useNavigate();
 
@@ -64,7 +60,6 @@ function AppLayout() {
   return (
     <Box sx={{ display: 'flex' }}>
       
-      {/* 1. SIDEBAR (MUI Drawer) */}
       <Drawer
         variant="permanent"
         sx={{
@@ -73,19 +68,17 @@ function AppLayout() {
           [`& .MuiDrawer-paper`]: { 
             width: DRAWER_WIDTH, 
             boxSizing: 'border-box',
-            bgcolor: '#111111', // Dein dunkler Hintergrund
-            color: 'grey.500',  // Standard Textfarbe Grau
+            bgcolor: '#111111',
+            color: 'grey.500',
             borderRight: '1px solid #333'
           },
         }}
       >
         <Box sx={{ overflow: 'auto', display: 'flex', flexDirection: 'column', height: '100%', py: 2 }}>
           
-          {/* Titel / Logo */}
-          <Box sx={{ px: 3, mb: 3 }}>
+          <Box sx={{ px: 3, mb: 3 ,textAlign:"center"}}>
              <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.2rem', letterSpacing: '1px' }}>
-               RENTAL<span style={{ color: '#646cff' }}>APP</span>
-             </span>
+               VERLEIH APP</span>
           </Box>
 
           <List>
@@ -94,7 +87,6 @@ function AppLayout() {
                 <ListItemButton
                   component={NavLink}
                   to={item.path}
-                  // Das sorgt für den "Active" Style (Blau bei Auswahl)
                   sx={{
                     minHeight: 48,
                     px: 2.5,
@@ -129,7 +121,6 @@ function AppLayout() {
             ))}
           </List>
 
-          {/* Spacer schiebt Logout nach unten */}
           <Box sx={{ flexGrow: 1 }} />
           
           <Divider sx={{ bgcolor: '#333', my: 2, mx: 2 }} />
@@ -148,9 +139,7 @@ function AppLayout() {
         </Box>
       </Drawer>
 
-      {/* 2. MAIN CONTENT AREA */}
       <Box component="main" sx={{ flexGrow: 1, p: 4, width: `calc(100% - ${DRAWER_WIDTH}px)` }}>
-        {/* Hier werden die Kinder-Routen (Home, Products etc.) angezeigt */}
         <Outlet /> 
       </Box>
 
@@ -161,15 +150,12 @@ function AppLayout() {
 function App() {
   return (
     <Routes>
-      {/* Login Seite (Ohne Layout) */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      {/* Geschützte Seiten (Mit Layout) */}
-      {/* Wir wickeln das Layout UM die Routen, statt in jede Route einzeln */}
       <Route element={<AppLayout />}>
         
         <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} /> {/* Optional, / ist sauberer */}
+        <Route path="/home" element={<Home />} />
         
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetails />} />
@@ -177,7 +163,7 @@ function App() {
         
         <Route path="/myrentals" element={<MyRentals />} /> 
 
-        <Route path="/about" element={<h2>Über uns (Platzhalter)</h2>} />
+        <Route path="/about" element={<About />} />
         
         <Route path="*" element={<h2>404 - Seite nicht gefunden</h2>} />
       </Route>

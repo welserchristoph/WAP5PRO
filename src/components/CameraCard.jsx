@@ -23,7 +23,7 @@ const CameraCard = ({ camera }) => {
       <CardMedia
         component="img"
         height="200"
-        image={camera.image || "https://via.placeholder.com/400x300?text=No+Image"} 
+        image={camera.image} 
         alt={camera.name}
         sx={{ objectFit: 'cover' }}
       />
@@ -39,15 +39,8 @@ const CameraCard = ({ camera }) => {
         </Stack>
 
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {camera.description ? camera.description.substring(0, 60) + "..." : "Keine Beschreibung."}
+          {camera.description}
         </Typography>
-        
-        <Chip 
-          label={camera.status} 
-          size="small"
-          color={camera.status === 'Available' ? 'success' : 'warning'}
-          variant="outlined"
-        />
       </CardContent>
 
       <Box sx={{ p: 2, pt: 0 }}>

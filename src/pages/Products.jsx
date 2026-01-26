@@ -29,8 +29,8 @@ const Products = () => {
 
   return (
     <Container maxWidth="xl">
-      <Typography variant="h3" component="h1" sx={{ mb: 4, fontWeight: 'bold' }}>
-        All Cameras for Rent
+      <Typography variant="h3" component="h1" textAlign="center" sx={{ mb: 4, fontWeight: 'bold' }}>
+        Alle verfügbaren Kameras
       </Typography>
 
       <Box sx={{ 
