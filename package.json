@@ -11,7 +11,8 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "preview": "vite preview",
     "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "seed": "node server/seed.js"
+    "seed": "node server/seed.js",
+    "start": "node app.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
