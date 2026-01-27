@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
         user_id: insertion.insertedId,
       });
 
-      console.log(`Activation link: http://localhost:3000/activate/${token}`);
+      console.log(`Activation token: ${token}`);
       return res.status(201).json({ message: "Benutzer erfolgreich registriert" });
     } else {
       res.status(500).send();
