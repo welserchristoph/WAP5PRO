@@ -55,12 +55,7 @@ const BookingCard = ({ booking, isPast }) => {
           </Box>
 
           <Stack alignItems={{ sm: 'flex-end' }} spacing={1}>
-            <Chip 
-              label={isPast ? "Abgeschlossen" : booking.status} 
-              color={isPast ? "default" : (booking.status === 'confirmed' ? 'success' : 'warning')}
-              size="small"
-              icon={isPast ? <HistoryIcon /> : <CheckCircleIcon />}
-            />
+           
             
             <Button 
               component={Link} 
